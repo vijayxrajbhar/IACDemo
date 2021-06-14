@@ -1,0 +1,430 @@
+{{extend 'layout.html'}}
+<link href="/welcome/static/css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+<script src="/welcome/static/js/jquery-ui-1.10.3.custom.js"></script>
+<style>
+table.blueTable {
+  border: 1px solid #1C6EA4;
+  background-color: #EEEEEE;
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+table.blueTable td, table.blueTable th {
+  border: 1px solid #AAAAAA;
+  padding: 3px 2px;
+}
+table.blueTable tbody td {
+  font-size: 13px;
+}
+table.blueTable tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.blueTable thead {
+  background: #02080C;
+  background: -moz-linear-gradient(top, #414649 0%, #1b2024 66%, #02080C 100%);
+  background: -webkit-linear-gradient(top, #414649 0%, #1b2024 66%, #02080C 100%);
+  background: linear-gradient(to bottom, #414649 0%, #1b2024 66%, #02080C 100%);
+  border-bottom: 2px solid #444444;
+}
+table.blueTable thead th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #FFFFFF;
+  border-left: 2px solid #D0E4F5;
+}
+table.blueTable thead th:first-child {
+  border-left: none;
+}
+
+table.blueTable tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  background: #D0E4F5;
+  background: -moz-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: -webkit-linear-gradient(top, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  background: linear-gradient(to bottom, #dcebf7 0%, #d4e6f6 66%, #D0E4F5 100%);
+  border-top: 2px solid #444444;
+}
+table.blueTable tfoot td {
+  font-size: 14px;
+}
+table.blueTable tfoot .links {
+  text-align: right;
+}
+table.blueTable tfoot .links a{
+  display: inline-block;
+  background: #1C6EA4;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+</style>
+<div id="container">
+    <div id="container-content">
+        <div class="page-heading"><h1>{{=message}}</h1></div>
+            <!-- container  -->
+        <table>
+			<tr id ="btnback">
+                <td align="center" height="5%">
+					<a style="display:none;" id="downloadxls" class="btn target123" href="#">
+                                <span class="icon-download-alt"></span>
+                                <span class="buttontext button" title="Download XLS">Download XLS</span>
+                            </a>
+					<input type="button" class="btn target123" onclick="tableToExcel('testTable1', 'All GPS Fitted Vehicle Running Status')" value="Export to Excel">
+					
+                     <input type="hidden" name="fdate" id="fdate" value="">
+					 <input type="hidden" name="tdate" id="tdate" value="">
+					 <input type="hidden" name="fdate" id="txtareaname" value="">
+					 <input type="hidden" name="fdate" id="txtareaid" value="">
+                </td>
+            </tr>
+            <tr style="display:none;" id ="trajax">
+                <td align="center" height="5%">
+                    <img src = "/ccat/static/images/ajax-loader.gif" />
+                </td>
+            </tr>
+        </table>
+
+        <div id="divgridtable" style="display:none;">
+        </div>
+		<div id="divgridtable1" style="display:none;">
+        </div>
+	<table>
+    <tr>
+		<td>
+			<div id="divlegend" style="display: none;">
+				<table>
+				<tr>
+					<td colspan="2">
+						<b>Legend : </b>
+					</td>
+				</tr>
+				<tr>
+                    <td>
+						Total : <b><span id="sptotal"></span></b>
+					</td>
+
+					
+				</tr>
+			</table>
+			</div>
+		</td>
+	</tr>
+</table>
+
+ <div id="divgridtablestock" style="display:none;">
+        </div>
+<table>
+    <tr>
+		<td>
+			<div id="divlegendstock" style="display: none;">
+				<table>
+				<tr>
+					<td colspan="2">
+						<b>Legend : </b>
+					</td>
+				</tr>
+				<tr>
+                    <td>
+						Total : <b><span id="sptotalstock"></span></b>
+					</td>
+
+					
+				</tr>
+			</table>
+			</div>
+		</td>
+	</tr>
+</table>
+    </div>
+</div>
+<!-- container end  -->
+<script type="text/javascript">
+var tableToExcel = (function() {
+  var uri = 'data:application/vnd.ms-excel;base64,'
+    , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+    , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+    , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+  return function(table, name) {
+    if (!table.nodeType) table = document.getElementById(table)
+    var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+    window.location.href = uri + base64(format(template, ctx))
+  }
+})()
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	//AutoFillDate('fdate','tdate');
+	LiveGPSFittedReport();
+	//LiveGPSFittedReportStock();
+	//setInterval(function(){LiveGPSFittedReport();}, 120000);
+	function LiveGPSFittedReport()
+	{
+		
+		try
+		{
+			//GetGPSFitted
+			$.ajax({
+			url:'/welcome/CaCDemos/GetTheDeviceHistory',
+			beforeSend: function() {
+				//ShowModal("Processing....", "<img src = '/welcome/static/images/ajax-loader.gif' />", 'i');
+			},
+			success:function(data){
+			var data = JSON.parse(data);
+			var html;
+				if(data.Result.length > 0)
+				{
+					//alert(data.Result.length);
+					$("#divgridtable").show();
+					$("#divgridtable").empty();
+					//$("#divgridtable1").empty();
+					var html1 = '<table id="testTable1" class="blueTable" width="100%" cellpadding="0" cellspacing="0" border="0"><thead>';
+					var Objdate = new Date();
+					var html2 = '<table id="testTable1" class="blueTable" width="100%" cellpadding="0" cellspacing="0" border="0"><thead><tr><th colspan="11" align="center">All GPS Fitted Vehicle Running Status</th></tr>';
+					var html =  '<tr>';
+					html +=  '<th>S.No</th>';
+					html +=  '<th>Command</th>';
+					html +=  '<th>Device IMEI No.</th>';
+					html +=  '<th>Lat</th>';
+					html +=  '<th>Long</th>';
+					html +=  '<th>Ignition Status</th>';
+					html +=  '<th>GPS Speed</th>';
+					html +=  '<th>Direction Degree</th>';
+					html +=  '<th>Actual Timestamp</th>';
+					html +=  '<th>Updated Timestamp</th>';
+					html +=  '<th>Map</th>';
+					html +=  '</tr></thead>';
+					var Counter = 1;
+					for(var item in data.Result)
+					{
+						html+=  '<tr>';
+						html+=  '<td >'+Counter+'</td>';
+						html+=  '<td>'+data.Result[item].Command+'</td>';
+						html+=  '<td>'+data.Result[item].device_iemi+'</td>';
+						html+=  '<td>'+data.Result[item].latitude+'</td>';
+						html+=  '<td >'+data.Result[item].longitude+'</td>';
+						html+=  '<td>'+data.Result[item].ignition_status+'</td>';
+						html+=  '<td>'+data.Result[item].gps_speed+'</td>';
+						html+=  '<td>'+data.Result[item].heading+'</td>';
+						html+=  '<td >'+data.Result[item].actual_datetime+'</td>';
+						html+=  '<td >'+data.Result[item].updated_time+'</td>';
+						html+=  '<td >Click on Map</td>';
+						html+= '</tr>';
+						Counter = Counter + 1;
+					}
+					html+= '</table>';
+					$("#divgridtable").append(html1 + html);
+					
+					$("#divgridtable1").append(html2 + html);
+					$("#divlegend").show();
+					$("#sptotal").html(data.Length);
+                    
+					$("#txtareaname").val(data.AreaName);
+					$("#txtareaid").val(data.AreaID);
+					//HideModal();
+				}
+				else
+				{
+					//ShowModal("Information", "<b>No Data Found</b>", 'i');
+				}
+				$('#trajax').hide();
+
+
+
+			},
+				error:function(err){
+					alert(err.responseText);
+				}
+			});
+		}
+		catch(ex)
+		{
+			alert(ex);
+		}
+	}
+    
+    
+	function LiveGPSFittedReportStock()
+	{
+		
+		try
+		{
+			//GetGPSFitted
+			$.ajax({
+			url:'/cclccat/report/GetAllAccessGPSFitted_Stock/1',
+			beforeSend: function() {
+				ShowModal("Processing....", "<img src = '/cclccat/static/images/ajax-loader.gif' />", 'i');
+			},
+			success:function(data){
+			var data = JSON.parse(data);
+			var html
+				if(data.Result.length > 0)
+				{
+					
+					//alert(data.Result.length);
+					$("#divgridtablestock").show();
+					$("#divgridtablestock").empty();
+					var html = '<table class="table-design" width="100%" cellpadding="0" cellspacing="0" border="0">';
+					html +=  '<thead><tr>';
+					html +=  '<th>S.No</th>';
+					html +=  '<th>Area Name</th>';
+					html +=  '<th>Project Name</th>';
+					html +=  '<th>Vehicle Reg.</th>';
+					html +=  '<th>Device IMEI.</th>';
+					html +=  '<th>Carrier ID</th>';
+					html +=  '<th>Latest Connectivity</th>';
+					//html += '<th>Minutes</th>';
+					html +=  '<th>Remarks</th>';
+					html +=  '<th>Last Area</th>';
+					html +=  '<th>Last Location</th>';
+					html +=  '<th>Carrier Status</th>';
+					
+					html +=  '</tr></thead>';
+					var Counter = 1;
+					for(var item in data.Result)
+					{
+						if(data.Result[item].StatusofData == 0){
+							html+=  '<tr>';
+							html+=  '<td >'+Counter+'</td>';
+							html+=  '<td>'+data.Result[item].Area_Name+'</td>';
+							html+=  '<td>'+data.Result[item].projectname+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_vehicle_id+'</td>';
+							html+=  '<td >'+data.Result[item].DeviceIMEI+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_id+'</td>';
+							html+=  '<td>'+data.Result[item].carrier_last_timestamp+'</td>';
+							//html+=  '<td>'+data.Result[item].Minutes+'</td>';
+							html+=  '<td >'+data.Result[item].remarks+'</td>';
+							html+=  '<td >'+data.Result[item].AREA_MAP_LOCATION+'</td>';
+							html+=  '<td >'+data.Result[item].lastlocation+'</td>';
+								html+=  '<td >STOCK</td>';
+							html+= '</tr>';
+							Counter = Counter + 1;
+						}
+						else if(data.Result[item].StatusofData == 1){
+							html+=  '<tr  bgcolor="#8cff66">';
+							html+=  '<td >'+Counter+'</td>';
+							html+=  '<td>'+data.Result[item].Area_Name+'</td>';
+							html+=  '<td>'+data.Result[item].projectname+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_vehicle_id+'</td>';
+							html+=  '<td >'+data.Result[item].DeviceIMEI+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_id+'</td>';
+							html+=  '<td>'+data.Result[item].carrier_last_timestamp+'</td>';
+							//html+=  '<td>'+data.Result[item].Minutes+'</td>';
+							html+=  '<td >'+data.Result[item].remarks+'</td>';
+							html+=  '<td >'+data.Result[item].AREA_MAP_LOCATION+'</td>';
+							html+=  '<td >'+data.Result[item].lastlocation+'</td>';
+								html+=  '<td >STOCK</td>';
+							html+= '</tr>';
+							Counter = Counter + 1;
+						}
+						else if(data.Result[item].StatusofData == 2){
+							html+=  '<tr  bgcolor="#ff6666">';
+							html+=  '<td >'+Counter+'</td>';
+							html+=  '<td>'+data.Result[item].Area_Name+'</td>';
+							html+=  '<td>'+data.Result[item].projectname+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_vehicle_id+'</td>';
+							html+=  '<td >'+data.Result[item].DeviceIMEI+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_id+'</td>';
+							html+=  '<td>'+data.Result[item].carrier_last_timestamp+'</td>';
+							//html+=  '<td>'+data.Result[item].Minutes+'</td>';
+							html+=  '<td >'+data.Result[item].remarks+'</td>';
+							html+=  '<td >'+data.Result[item].AREA_MAP_LOCATION+'</td>';
+							html+=  '<td >'+data.Result[item].lastlocation+'</td>';
+								html+=  '<td >STOCK</td>';
+							html+= '</tr>';
+							Counter = Counter + 1;
+						}
+						else if(data.Result[item].StatusofData == 3){
+							html+=  '<tr  bgcolor="#00FFFF">';
+							html+=  '<td >'+Counter+'</td>';
+							html+=  '<td>'+data.Result[item].Area_Name+'</td>';
+							html+=  '<td>'+data.Result[item].projectname+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_vehicle_id+'</td>';
+							html+=  '<td >'+data.Result[item].DeviceIMEI+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_id+'</td>';
+							html+=  '<td>'+data.Result[item].carrier_last_timestamp+'</td>';
+							//html+=  '<td>'+data.Result[item].Minutes+'</td>';
+							html+=  '<td >'+data.Result[item].remarks+'</td>';
+							html+=  '<td >'+data.Result[item].AREA_MAP_LOCATION+'</td>';
+							html+=  '<td >'+data.Result[item].lastlocation+'</td>';
+								html+=  '<td >STOCK</td>';
+							html+= '</tr>';
+							Counter = Counter + 1;
+						}
+						else if(data.Result[item].StatusofData == 4){
+							html+=  '<tr  bgcolor="#FF00FF">';
+							html+=  '<td >'+Counter+'</td>';
+							html+=  '<td>'+data.Result[item].Area_Name+'</td>';
+							html+=  '<td>'+data.Result[item].projectname+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_vehicle_id+'</td>';
+							html+=  '<td >'+data.Result[item].DeviceIMEI+'</td>';
+							html+=  '<td >'+data.Result[item].carrier_id+'</td>';
+							html+=  '<td>'+data.Result[item].carrier_last_timestamp+'</td>';
+							//html+=  '<td>'+data.Result[item].Minutes+'</td>';
+							html+=  '<td >'+data.Result[item].remarks+'</td>';
+							html+=  '<td >'+data.Result[item].AREA_MAP_LOCATION+'</td>';
+							html+=  '<td >'+data.Result[item].lastlocation+'</td>';
+								html+=  '<td >STOCK</td>';
+							html+= '</tr>';
+							Counter = Counter + 1;
+						}
+					}
+					html+= '</table>';
+					$("#divgridtablestock").append(html);
+					$("#divlegendstock").show();
+					$("#sptotalstock").html(data.Length);
+					//HideModal();
+				}
+				else
+				{
+					//ShowModal("Information", "<b>No Data Found</b>", 'i');
+				}
+				$('#trajax').hide();
+
+
+
+			},
+				error:function(err){
+					alert(err.responseText);
+				}
+			});
+		}
+		catch(ex)
+		{
+			alert(ex);
+		}
+	}
+	
+
+
+	$("#downloadxls").on('click',function() {
+		DownLoadDataXLS();
+		return false;
+	});
+	
+	
+	
+
+
+});
+	function DownLoadDataXLS()
+	{
+		try
+		{
+
+			var AreaName = $("#txtareaname").val();
+			var AreaID = $("#txtareaid").val();
+			var UserName = GETUSERNAME();
+			var win = window.open('http://'+hdn_liveipaddress+':8080/examples/cclccat/gpsfitted.jsp?rpt=xls&areaid=' + AreaID + '&AreaName=' + AreaName + '&UserName=' + UserName +  '');
+			win.focus();
+		}
+		catch(ex)
+		{
+		   ShowModal("Error", ex, 'e');
+		}
+	}
+
+
+</script>

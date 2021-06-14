@@ -1,0 +1,14 @@
+{{extend 'layout.html'}}
+<h1>{{=Title}}</h1>
+<center>
+    <table>
+        <tr>
+            <td>
+                Configuration version – 1.0 
+            </td>
+             <td>
+               <img src="http://www.cclvts.com/cclccat/static/images/Slide1.PNG" alt="COAL HQ" width="500" height="600">
+            </td>
+        </tr>
+    </table>
+</center>
