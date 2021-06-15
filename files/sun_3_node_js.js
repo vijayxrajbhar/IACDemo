@@ -9,7 +9,7 @@
 
 var http = require('http');
 var sockjs = require('/home/ubuntu/node_modules/sockjs');
-var node_static = require('/home/ubuntu/node_modules/sockjs'),
+var node_static = require('/node_modules/sockjs'),
 zmq = require('/node_modules/zeromq'),
 
 //Receive Data on port 6662
