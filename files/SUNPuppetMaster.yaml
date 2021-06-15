@@ -1,0 +1,39 @@
+Parameters:
+  ImageId:
+    Description: Image ID to launch EC2 instances.
+    Type: AWS::EC2::Image::Id
+    # amzn-ami-hvm-2016.09.1.20161221-x86_64-gp2
+    Default: ami-0b9064170e32bde34
+  InstanceType:
+    Description: Instance type to launch EC2 instances.
+    Type: String
+    Default: t2.micro
+    AllowedValues: [ t2.micro, m3.medium]
+  SecurityGroups:
+    Type: CommaDelimitedList
+    Description: The list of SecurityGroupIds in your Virtual Private Cloud (VPC)
+    Default: sg-001d2be378f709ecc
+Resources:
+  EC2I4YJTH:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+        AvailabilityZone : us-east-2c
+        KeyName: Webservernginx
+        ImageId: !Ref ImageId
+        InstanceType: !Ref InstanceType
+        SecurityGroupIds: !Ref SecurityGroups
+        Tags:
+        - Key: "Name"
+          Value: "SUN-PP-SERVER"
+        UserData: !Base64 |
+            #!/bin/bash
+            sudo apt-get update
+            sudo apt-get install wget
+            sudo wget https://apt.puppetlabs.com/puppet-release-bionic.deb
+            sudo dpkg -i puppet-release-bionic.deb
+            sudo apt-get install -y puppetmaster
+            sudo apt-get install git
+            sudo apt policy puppetmaster
+            sudo systemctl start  puppet-master.service
+            sudo systemctl enable puppet-master.service
+  
